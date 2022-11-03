@@ -96,36 +96,5 @@ namespace ProyectoEjemploAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                try
-                {
-                    var estado = context.ESTADO.FirstOrDefault(f => f.Id_estado == id);
-                    if (estado != null)
-                    {
-                        context.ESTADO.Remove(estado);
-                        context.SaveChanges();
-                        return Ok(id);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using ProyectoEjemploAPI.ResponseModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -84,42 +85,22 @@ namespace ProyectoEjemploAPI.Controllers
                 {
                     context.Entry(EstacionM).State = EntityState.Modified;
                     context.SaveChanges();
-                    return CreatedAtRoute("GetEstacionM", new { id = EstacionM.Id_estacion_meteorologica }, EstacionM);
+                    LoginResponseModel actEstado = new LoginResponseModel()
+                    {
+                        Token = "ok",
+                        Mensaje = "actualizacion Exitosa",
+                        Respuesta = 1
+                    };
+                    return Ok(actEstado);
                 }
                 else
                 {
-                    return BadRequest();
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                try
-                {
-                    var EstacionM = context.NESTACIONMETEOROLOGICA.FirstOrDefault(f => f.Id_estacion_meteorologica == id);
-                    if (EstacionM != null)
+                    LoginResponseModel actEstado = new LoginResponseModel()
                     {
-                        context.NESTACIONMETEOROLOGICA.Remove(EstacionM);
-                        context.SaveChanges();
-                        return Ok(id);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
+                        Respuesta = 0,
+                        Mensaje = "actualizacion con error",
+                    };
+                    return Ok(actEstado);
                 }
             }
             catch (Exception ex)

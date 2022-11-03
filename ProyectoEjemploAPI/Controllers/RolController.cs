@@ -5,6 +5,7 @@ using ProyectoEjemploAPI.Models;
 using System;
 using System.Linq;
 using ProyectoEjemploAPI.Context;
+using ProyectoEjemploAPI.ResponseModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -85,42 +86,22 @@ namespace ProyectoEjemploAPI.Controllers
                 {
                     context.Entry(rol).State = EntityState.Modified;
                     context.SaveChanges();
-                    return CreatedAtRoute("GetUser", new { id = rol.Id_rol }, rol);
+                    LoginResponseModel actEstado = new LoginResponseModel()
+                    {
+                        Token = "ok",
+                        Mensaje = "actualizacion Exitosa",
+                        Respuesta = 1
+                    };
+                    return Ok(actEstado);
                 }
                 else
                 {
-                    return BadRequest();
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            try
-            {
-                try
-                {
-                    var rol = context.ROL.FirstOrDefault(f => f.Id_rol == id);
-                    if (rol != null)
+                    LoginResponseModel actEstado = new LoginResponseModel()
                     {
-                        context.ROL.Remove(rol);
-                        context.SaveChanges();
-                        return Ok(id);
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
+                        Respuesta = 0,
+                        Mensaje = "actualizacion con error",
+                    };
+                    return Ok(actEstado);
                 }
             }
             catch (Exception ex)

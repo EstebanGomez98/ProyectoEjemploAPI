@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProyectoEjemploAPI.Models;
+using ProyectoEjemploAPI.RequestModels;
 
 namespace ProyectoEjemploAPI.Context
 {

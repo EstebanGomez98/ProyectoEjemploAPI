@@ -23,6 +23,11 @@ namespace ProyectoEjemploAPI.Controllers
         [HttpPost, Route("requestToken")]
         public ActionResult RequestToken([FromBody] LoginRequestModel request)
         {
+            request.Email = request.Email;
+            string result = string.Empty;
+            byte[] encryted = System.Text.Encoding.Unicode.GetBytes(request.Pass);
+            result = Convert.ToBase64String(encryted);
+            request.Pass = result;
             if (!ModelState.IsValid)
             {
                 return BadRequest("Invalid Request");

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using ProyectoEjemploAPI.Utilities;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ProyectoEjemploAPI.Controllers
@@ -25,7 +25,7 @@ namespace ProyectoEjemploAPI.Controllers
         // GET: api/<ValuesController>
         [HttpGet]
         [Route("listarUsuarios")]
-        //[Authorize]
+        [Authorize]
         public ActionResult Get()
         {
             try
@@ -70,10 +70,15 @@ namespace ProyectoEjemploAPI.Controllers
                         Respuesta = 0,
                         Mensaje = "Correo ya registrado ya registrado",
                     };
-                    return Ok(actEstado);
+                    return BadRequest(actEstado);
                 }
                 else
                 {
+                    string result = string.Empty;
+                    byte[] encryted = System.Text.Encoding.Unicode.GetBytes(user.Pass);  
+                    result = Convert.ToBase64String(encryted);
+                    //Console.WriteLine("clave encriptada:" + result+ "Aqui");
+                    user.Pass=result;
                     context.USUARIO.Add(user);
                     context.SaveChanges();
                     LoginResponseModel actEstado = new LoginResponseModel()
@@ -89,8 +94,10 @@ namespace ProyectoEjemploAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         //PUT
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult Put(int id, [FromBody] Usuario user)
         {
             try
@@ -121,5 +128,7 @@ namespace ProyectoEjemploAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        //--------
     }
 }

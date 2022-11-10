@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using ProyectoEjemploAPI.ResponseModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -56,16 +57,27 @@ namespace ProyectoEjemploAPI.Controllers
         {
             try
             {
-                var sensorVal = context.SENSOR.FirstOrDefault(f => f.Descripcion == sensor.Descripcion);
+                var sensorVal = context.SENSOR.FirstOrDefault(f => f.Descripcion != sensor.Descripcion);
                 if (sensorVal != null)
-                {
-                    return Ok("Sensor ya registrado");
-                }
-                else
                 {
                     context.SENSOR.Add(sensor);
                     context.SaveChanges();
-                    return CreatedAtRoute("GetSensor", new { id = sensor.Id_sensor }, sensor);
+                    LoginResponseModel actEstado = new LoginResponseModel()
+                    {
+                        Token = "ok",
+                        Mensaje = "Guardado Exitosamente",
+                        Respuesta = 1
+                    };
+                    return Ok(actEstado);
+                }
+                else
+                {
+                    LoginResponseModel actEstado = new LoginResponseModel()
+                    {
+                        Respuesta = 0,
+                        Mensaje = "Sensor ya registrado",
+                    };
+                    return Ok(actEstado);
                 }
             }
             catch (Exception ex)
@@ -76,24 +88,47 @@ namespace ProyectoEjemploAPI.Controllers
 
         // PUT api/<ValuesController>/5
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] Sensor sensor)
+        public ActionResult Put([FromBody] Sensor sensor)
         {
             try
             {
-                if (sensor.Id_sensor == id)
+                LoginResponseModel actEstado = new LoginResponseModel();
+                var obj = context.SENSOR.Find(sensor.Id_sensor);
+                if (obj == null)
                 {
-                    context.Entry(sensor).State = EntityState.Modified;
+                    actEstado.Mensaje = "No se encontro el sensor";
+                    actEstado.Respuesta = 0;
+                    return BadRequest(actEstado);
+                }
+                //context.Entry(sensor).State = EntityState.Modified; sensor.Id_estado where sensor.Id_sensor
+                if (obj.Id_estado != sensor.Id_estado)
+                {
+                    obj.Id_estado = sensor.Id_estado;
+                    obj.Descripcion = obj.Descripcion;
+                    context.Entry(obj).State = EntityState.Modified;
                     context.SaveChanges();
-                    return CreatedAtRoute("GetSensor", new { id = sensor.Id_sensor }, sensor);
-                }
-                else
+                    actEstado.Mensaje = "Actualizacion exitosa";
+                    actEstado.Respuesta = 1;
+                }else if (obj.Descripcion != sensor.Descripcion)
                 {
-                    return BadRequest();
+                    obj.Id_estado = obj.Id_estado;
+                    obj.Descripcion = sensor.Descripcion;
+                    context.Entry(obj).State = EntityState.Modified;
+                    context.SaveChanges();
+                    actEstado.Mensaje = "Actualizacion exitosa";
+                    actEstado.Respuesta = 1;
                 }
+                return Ok(actEstado);
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                LoginResponseModel actEstado = new LoginResponseModel()
+                {
+                    Respuesta = 0,
+                    Mensaje = "actualizacion con error",
+                };
+                return BadRequest(actEstado);
             }
         }
 
